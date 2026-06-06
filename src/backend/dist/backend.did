@@ -1,0 +1,272 @@
+type WorkoutSummary = 
+ record {
+   completedCards: nat;
+   durationSeconds: nat;
+   estimatedCalories: nat;
+   sessionId: SessionId;
+   startTime: Timestamp;
+   totalCards: nat;
+ };
+type WorkoutSessionView = 
+ record {
+   cardCount: nat;
+   currentIndex: nat;
+   deckId: DeckId;
+   elapsedSeconds: nat;
+   estimatedCalories: nat;
+   id: SessionId;
+   remainingCards: nat;
+   startTime: Timestamp;
+   status: SessionStatus;
+   totalCards: nat;
+ };
+type WorkoutHistoryEntry = 
+ record {
+   aceCardsDrawn: nat;
+   caloriesBurned: nat;
+   cardsCompleted: nat;
+   completedAt: int;
+   deckId: text;
+   durationSeconds: nat;
+   id: text;
+   jokerCardsDrawn: nat;
+   kingCardsDrawn: nat;
+   repsBySuit: record {
+                 clubs: nat;
+                 diamonds: nat;
+                 hearts: nat;
+                 spades: nat;
+               };
+   totalReps: nat;
+   userId: principal;
+ };
+type UserTier = 
+ variant {
+   Guest;
+   Registered;
+   Subscriber;
+ };
+type UserProfile = 
+ record {
+   aceCardsDrawn: nat;
+   createdAt: int;
+   currentStreak: nat;
+   email: text;
+   emailVerified: bool;
+   fullDecksCompleted: nat;
+   jokerCardsDrawn: nat;
+   kingCardsDrawn: nat;
+   lastWorkoutDate: opt int;
+   longestStreak: nat;
+   "principal": principal;
+   totalCalories: nat;
+   totalReps: nat;
+   totalRepsPerSuit:
+    record {
+      clubs: nat;
+      diamonds: nat;
+      hearts: nat;
+      spades: nat;
+    };
+   totalWorkouts: nat;
+   unlockedAchievements: vec record {
+                               text;
+                               int;
+                             };
+   username: text;
+ };
+type Timestamp = int;
+type Suit = 
+ variant {
+   Clubs;
+   Diamonds;
+   Hearts;
+   Joker;
+   Spades;
+ };
+type SessionStatus = 
+ variant {
+   Active;
+   Completed;
+ };
+type SessionId = nat;
+type SessionCard = 
+ record {
+   card: Card;
+   challenge: opt JokerChallenge;
+   isMod: bool;
+   reps: nat;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: vec AdminUserEntry;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type RepSpec = 
+ variant {
+   Double;
+   Fixed: nat;
+   Half;
+   JokerChallenge;
+ };
+type Rank = 
+ variant {
+   Ace;
+   Eight;
+   Five;
+   Four;
+   Jack;
+   Joker;
+   King;
+   Nine;
+   Queen;
+   Seven;
+   Six;
+   Ten;
+   Three;
+   Two;
+ };
+type OnboardingData = 
+ record {
+   gender: text;
+   hasCompletedOnboarding: bool;
+   level: text;
+ };
+type JokerChallenge = variant {DeadHang30;};
+type DeckWithCards = 
+ record {
+   cards: vec Card;
+   deck: Deck;
+ };
+type DeckId = nat;
+type Deck = 
+ record {
+   cardCount: nat;
+   description: text;
+   id: DeckId;
+   isAvailable: bool;
+   name: text;
+ };
+type CardId = nat;
+type CardCount = 
+ variant {
+   FullDeck;
+   Ten;
+   Twenty;
+ };
+type Card = 
+ record {
+   deckId: DeckId;
+   exercise: text;
+   id: CardId;
+   imageUrl: text;
+   rank: Rank;
+   repSpec: RepSpec;
+   suit: Suit;
+   videoUrl: text;
+ };
+type AdminUserEntry = 
+ record {
+   email: opt text;
+   isIndefinite: bool;
+   "principal": principal;
+   tier: UserTier;
+   tierExpiresAt: opt int;
+ };
+type AchievementRarity = 
+ variant {
+   Common;
+   Epic;
+   Legendary;
+   Rare;
+   Uncommon;
+ };
+type AchievementId = text;
+type Achievement = 
+ record {
+   description: text;
+   id: AchievementId;
+   name: text;
+   rarity: AchievementRarity;
+   unlockedAt: opt int;
+ };
+service : {
+  addCard: (deckId: DeckId, suit: Suit, rank: Rank, exercise: text, repSpec:
+   RepSpec, imageUrl: text, videoUrl: text) -> (CardId);
+  addDeck: (name: text, description: text, isAvailable: bool) -> (DeckId);
+  adminGrantSubscriber: (targetPrincipal: principal, expiresAt: opt int,
+   isIndefinite: bool) -> (Result);
+  adminRevokeSubscriber: (targetPrincipal: principal) -> (Result);
+  completeWorkout: (sessionId: SessionId) -> (opt WorkoutSummary);
+  createWorkoutSession: (deckId: DeckId, cardCount: CardCount) -> (SessionId);
+  deleteDeck: (id: DeckId) -> ();
+  getAchievements: () -> (vec Achievement) query;
+  getAdminUserList: () -> (Result_1);
+  getDeck: (id: DeckId) -> (opt DeckWithCards) query;
+  getDecks: () -> (vec Deck) query;
+  getMyProfile: () -> (variant {
+                         err: text;
+                         ok: UserProfile;
+                       }) query;
+  getMyWorkoutHistory: () ->
+   (variant {
+      err: text;
+      ok: vec WorkoutHistoryEntry;
+    }) query;
+  getOnboarding: () -> (opt OnboardingData) query;
+  getTier: (userId: principal) -> (UserTier) query;
+  getUserAchievements: () -> (vec record {
+                                    text;
+                                    int;
+                                  }) query;
+  getWorkoutSession: (sessionId: SessionId) -> (opt WorkoutSessionView) query;
+  loginUser: (email: text, passwordHash: text) ->
+   (variant {
+      err: text;
+      ok: UserProfile;
+    });
+  nextCard: (sessionId: SessionId) -> (opt SessionCard);
+  registerUser: (username: text, email: text, passwordHash: text) ->
+   (variant {
+      err: text;
+      ok;
+    });
+  requestPasswordReset: (email: text) -> (variant {
+                                            err: text;
+                                            ok;
+                                          });
+  resendVerificationEmail: (email: text) -> (variant {
+                                               err: text;
+                                               ok;
+                                             });
+  resetPassword: (token: text, newPasswordHash: text) ->
+   (variant {
+      err: text;
+      ok;
+    });
+  revokeTier: (userId: principal) -> (Result);
+  saveOnboarding: (gender: text, level: text) -> (Result);
+  saveWorkoutHistory: (entry: WorkoutHistoryEntry) ->
+   (variant {
+      err: text;
+      ok;
+    });
+  setAdminPrincipal: (newAdmin: principal) -> (Result);
+  setTier: (userId: principal, tier: UserTier, expiresAt: opt int,
+   isIndefinite: bool) -> (Result);
+  updateCard: (cardId: CardId, exercise: text, repSpec: RepSpec, imageUrl:
+   text, videoUrl: text) -> ();
+  updateProfile: (username: text) -> (variant {
+                                        err: text;
+                                        ok;
+                                      });
+  verifyEmail: (token: text) -> (variant {
+                                   err: text;
+                                   ok;
+                                 });
+}

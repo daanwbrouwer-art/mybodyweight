@@ -1,0 +1,185 @@
+// Version: 1.0.0
+type CardId__427529015 = Nat;
+type Card__858299 =
+  {
+    deckId : DeckId__507138699;
+    exercise : Text;
+    id : CardId__427529015;
+    imageUrl : Text;
+    rank : Rank__668145741;
+    repSpec : RepSpec__1046357192;
+    suit : Suit__694988384;
+    videoUrl : Text
+  };
+type Data__80296667<K, V> =
+  {var count : Nat__1040412405; kvs : [var ?(K, V)]};
+type DeckId__507138699 = Nat;
+type Deck__290499532 =
+  {
+    cardCount : Nat;
+    description : Text;
+    id : DeckId__507138699;
+    isAvailable : Bool;
+    name : Text
+  };
+type EmailVerificationToken__646253064 =
+  {
+    createdAt : Int;
+    email : Text;
+    token : Text;
+    used : Bool;
+    userPrincipal : Principal
+  };
+type Int__616954475 = Int;
+type Int__837511138 = Int__616954475;
+type Internal__41346355<K, V> =
+  {children : [var ?Node__1000929467<K, V>]; data : Data__80296667<K, V>};
+type Leaf__712614010<K, V> = {data : Data__80296667<K, V>};
+type Nat__1040412405 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__1000929467<K, V> =
+  {#internal : Internal__41346355<K, V>; #leaf : Leaf__712614010<K, V>};
+type OnboardingData__204295224 =
+  {gender : Text; hasCompletedOnboarding : Bool; level : Text};
+type PasswordResetToken__168445307 =
+  {createdAt : Int; email : Text; token : Text; used : Bool};
+type Rank__668145741 =
+  {
+    #Ace;
+    #Eight;
+    #Five;
+    #Four;
+    #Jack;
+    #Joker;
+    #King;
+    #Nine;
+    #Queen;
+    #Seven;
+    #Six;
+    #Ten;
+    #Three;
+    #Two
+  };
+type RepSpec__1046357192 = {#Double; #Fixed : Nat; #Half; #JokerChallenge};
+type SessionId__1052913375 = Nat;
+type SessionStatus__459895397 = {#Active; #Completed};
+type SubscriberAccess__42525480 =
+  {expiresAt : ?Int; grantedBy : ?Principal; isIndefinite : Bool};
+type Suit__694988384 = {#Clubs; #Diamonds; #Hearts; #Joker; #Spades};
+type Time__298180599 = Int__837511138;
+type Time__688418391 = Time__298180599;
+type Timestamp__301639476 = Time__688418391;
+type UserAccount__387857074 =
+  {
+    createdAt : Int;
+    email : Text;
+    emailVerified : Bool;
+    passwordHash : Text;
+    principal : Principal;
+    username : Text
+  };
+type UserProfile__1009003526 =
+  {
+    aceCardsDrawn : Nat;
+    createdAt : Int;
+    currentStreak : Nat;
+    email : Text;
+    emailVerified : Bool;
+    fullDecksCompleted : Nat;
+    jokerCardsDrawn : Nat;
+    kingCardsDrawn : Nat;
+    lastWorkoutDate : ?Int;
+    longestStreak : Nat;
+    principal : Principal;
+    totalCalories : Nat;
+    totalReps : Nat;
+    totalRepsPerSuit :
+      {clubs : Nat; diamonds : Nat; hearts : Nat; spades : Nat};
+    totalWorkouts : Nat;
+    unlockedAchievements : [(Text, Int)];
+    username : Text
+  };
+type WorkoutHistoryEntry__745123854 =
+  {
+    aceCardsDrawn : Nat;
+    caloriesBurned : Nat;
+    cardsCompleted : Nat;
+    completedAt : Int;
+    deckId : Text;
+    durationSeconds : Nat;
+    id : Text;
+    jokerCardsDrawn : Nat;
+    kingCardsDrawn : Nat;
+    repsBySuit : {clubs : Nat; diamonds : Nat; hearts : Nat; spades : Nat};
+    totalReps : Nat;
+    userId : Principal
+  };
+type WorkoutSession__93868177 =
+  {
+    cardCount : Nat;
+    var currentIndex : Nat;
+    deckId : DeckId__507138699;
+    var elapsedSeconds : Nat;
+    var estimatedCalories : Nat;
+    id : SessionId__1052913375;
+    var lastReps : Nat;
+    shuffledCardIds : [CardId__427529015];
+    startTime : Timestamp__301639476;
+    var status : SessionStatus__459895397
+  };
+actor {
+  stable accounts :
+    {
+      var root : Node__1000929467<Text, UserAccount__387857074>;
+      var size : Nat__1040412405
+    };
+  stable adminState : {var adminPrincipal : ?Principal};
+  stable cards :
+    {
+      var root : Node__1000929467<CardId__427529015, Card__858299>;
+      var size : Nat__1040412405
+    };
+  stable counters :
+    {var nextCardId : Nat; var nextDeckId : Nat; var nextSessionId : Nat};
+  stable decks :
+    {
+      var root : Node__1000929467<DeckId__507138699, Deck__290499532>;
+      var size : Nat__1040412405
+    };
+  stable emailTokens :
+    {
+      var root : Node__1000929467<Text, EmailVerificationToken__646253064>;
+      var size : Nat__1040412405
+    };
+  stable onboardingMap :
+    {
+      var root : Node__1000929467<Principal, OnboardingData__204295224>;
+      var size : Nat__1040412405
+    };
+  stable profiles :
+    {
+      var root : Node__1000929467<Principal, UserProfile__1009003526>;
+      var size : Nat__1040412405
+    };
+  stable resetTokens :
+    {
+      var root : Node__1000929467<Text, PasswordResetToken__168445307>;
+      var size : Nat__1040412405
+    };
+  stable sessions :
+    {
+      var root :
+        Node__1000929467<SessionId__1052913375, WorkoutSession__93868177>;
+      var size : Nat__1040412405
+    };
+  stable tierMap :
+    {
+      var root : Node__1000929467<Principal, SubscriberAccess__42525480>;
+      var size : Nat__1040412405
+    };
+  stable workoutHistory :
+    {
+      var root : Node__1000929467<Principal, [WorkoutHistoryEntry__745123854]>;
+      var size : Nat__1040412405
+    }
+};

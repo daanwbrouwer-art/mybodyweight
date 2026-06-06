@@ -1,0 +1,22 @@
+{
+  "overview": "A premium dark-themed fitness card game app for calisthenics workouts.",
+  "features": [
+    "Dark premium fitness card game",
+    "Full Upper Body workout deck with 52 cards",
+    "Shuffle, flip, and Joker animations",
+    "King and Ace rep modifier overlays",
+    "Three-tier access: Guest, Registered, Subscriber",
+    "Onboarding flow with gender and level selection",
+    "Workout history and statistics",
+    "Admin user management panel"
+  ],
+  "category": "fitness-app",
+  "tags": [
+    "fitness",
+    "calisthenics",
+    "card-game",
+    "workout",
+    "dark-theme"
+  ],
+  "last_updated": "2026-05-27T11:16:20.310Z"
+}
